@@ -11,7 +11,29 @@
   <header>
     <h1>Task Tracker</h1>
   </header>
-  <main></main>
+  <main>
+    <div class="app__container">
+      <h3 class="app__title">Do what you love</h3>
+      <div class="input__container">
+        <input
+          class="input"
+          id="input"
+          type="text"
+          placeholder="Add a task..."
+          autocomplete="off"
+        >
+        <button class="btn btn_add" id="btn_add">Add</button>
+      </div>
+      <div class="list__container">
+        <div class="filters__container">
+          <button data-filter="all">All</button>
+          <button data-filter="active">Active</button>
+          <button data-filter="done">Done</button>
+        </div>
+        <div class="tasks__list"></div>
+      </div>
+    </div>
+  </main>
   <footer></footer>
   <script src="index.js"></script>
 </body>
