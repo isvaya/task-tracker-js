@@ -17,10 +17,12 @@ function addTask() {
     id: id,
     text: cleanInput,
     done: false,
+    isEditing: false,
   }
 
   tasks.push(task);
   input.value = '';
+  input.focus();
   render();
 }
 
@@ -28,6 +30,7 @@ btnAdd.addEventListener('click', addTask);
 
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
+    e.preventDefault();
     addTask();
   }
 })
@@ -55,13 +58,46 @@ function render() {
       textTask.classList.add('task--done');
     };
 
+    const btnEdit = document.createElement('button');
+    btnEdit.classList.add('btn_edit');
+    btnEdit.textContent = "Edit";
+    btnEdit.dataset.action = 'edit';
+    btnEdit.dataset.id = tasks[i].id;
+
     const btnDelete = document.createElement('button');
     btnDelete.classList.add('btn_delete');
     btnDelete.textContent = 'Delete';
     btnDelete.dataset.action = 'delete';
     btnDelete.dataset.id = tasks[i].id;
 
-    taskContainer.append(checkbox, textTask, btnDelete);
+    //EDITING MODE
+    const containerEditing = document.createElement('div');
+    containerEditing.classList.add('container__editing');
+    
+    const inputEditing = document.createElement('input');
+    inputEditing.classList.add('input__edit');
+    inputEditing.type = 'text';
+    inputEditing.value = tasks[i].text;
+
+    const btnSave = document.createElement('button');
+    btnSave.classList.add('btn__save');
+    btnSave.textContent = 'Save';
+    btnSave.dataset.action = 'save';
+    btnSave.dataset.id = tasks[i].id;
+
+    const btnCancel = document.createElement('button');
+    btnCancel.classList.add('btn__cancel');
+    btnCancel.textContent = 'Cancel';
+    btnCancel.dataset.action = 'cancel';
+    btnCancel.dataset.id = tasks[i].id;
+
+    containerEditing.append(inputEditing, btnSave, btnCancel);
+
+    if (tasks[i].isEditing === false) {
+      taskContainer.append(checkbox, textTask, btnEdit, btnDelete);
+    } else {
+      taskContainer.append(checkbox, containerEditing)
+    }
   }
 }
 
@@ -77,6 +113,37 @@ tasksList.addEventListener('click', function(e) {
     render();
     return;
   };
+
+  if (btn.dataset.action === 'edit') {
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks[i].id === id) {
+        tasks[i].isEditing = true;
+      } else {
+        tasks[i].isEditing = false;
+      }
+    }
+    
+    render();
+  }
+
+  if (btn.dataset.action === 'save') {
+    // поиск в массиве по id (короткая замена вместо цикла for как в edit)
+    const task = tasks.find(t => t.id === id);
+
+    if (!task) return;
+    
+    const taskContainer = btn.closest('.task__container');
+    const inputEditing = taskContainer.querySelector('.input__edit');
+    const newText = inputEditing.value.trim();
+
+    if (newText === '') return;
+
+    task.text = newText;
+    task.isEditing = false;
+
+    render();
+  }
+
 })
 
 tasksList.addEventListener('change', function(e) {
