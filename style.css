@@ -103,3 +103,12 @@ button {
   top: 28px;
   left: 0;
 }
+
+.task__container {
+  display: flex;
+  font-display: row;
+}
+
+.task--done {
+  text-decoration: line-through;
+}
