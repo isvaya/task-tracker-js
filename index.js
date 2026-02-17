@@ -78,6 +78,7 @@ function render() {
     inputEditing.classList.add('input__edit');
     inputEditing.type = 'text';
     inputEditing.value = tasks[i].text;
+    inputEditing.dataset.id = tasks[i].id;
 
     const btnSave = document.createElement('button');
     btnSave.classList.add('btn__save');
@@ -96,7 +97,9 @@ function render() {
     if (tasks[i].isEditing === false) {
       taskContainer.append(checkbox, textTask, btnEdit, btnDelete);
     } else {
-      taskContainer.append(checkbox, containerEditing)
+      taskContainer.append(checkbox, containerEditing);
+      inputEditing.focus();
+      inputEditing.select();
     }
   }
 }
@@ -122,8 +125,8 @@ tasksList.addEventListener('click', function(e) {
         tasks[i].isEditing = false;
       }
     }
-    
     render();
+    return;
   }
 
   if (btn.dataset.action === 'save') {
@@ -144,6 +147,12 @@ tasksList.addEventListener('click', function(e) {
     render();
   }
 
+  if (btn.dataset.action === 'cancel') {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    task.isEditing = false;
+    render();
+  }
 })
 
 tasksList.addEventListener('change', function(e) {
@@ -161,4 +170,40 @@ tasksList.addEventListener('change', function(e) {
   }
 
   render();
+})
+
+tasksList.addEventListener('keydown', (e) => {
+  const inputEdit = e.target.closest('.input__edit');
+
+  if (!inputEdit) return;
+
+  const id = Number(inputEdit.dataset.id);
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+
+    const newText = inputEdit.value.trim();
+    const task = tasks.find(t => t.id === id);
+
+    if (!task) return;
+
+    if (newText !== '') {
+      task.text = newText;
+      task.isEditing = false;
+    }
+
+    render();
+  }
+
+  if (e.key === 'Escape') {
+    e.preventDefault();
+
+    const task = tasks.find(t => t.id === id);
+
+    if (!task) return;
+    
+    task.isEditing = false;
+
+    render();
+  }
 })
